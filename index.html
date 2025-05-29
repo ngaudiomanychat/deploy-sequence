@@ -12,7 +12,7 @@
       padding: 40px;
       font-size: 1.2rem;
       line-height: 1.6;
-      overflow: hidden;
+      overflow-x: hidden;
     }
     .terminal {
       max-width: 800px;
@@ -100,9 +100,9 @@
   
   <div class="terminal" id="terminal">
     <div class="user-info">
-      > Initializing deployment for: <span id="userName">Anonymous Developer</span>
+      > Initializing deployment for: <span id="userName">Anonymous Human</span>
       > Deployment ID: <span id="deploymentId" class="deployment-id">DEP-UNKNOWN</span>
-      > Looking for work: <span id="userClass" class="status-working">Full Stack</span>
+      > Looking for work: <span id="userClass" class="status-working">Confirmed.</span>
     </div>
     
     > prompt://deploy_sequence_start
@@ -163,9 +163,24 @@
     }
 
     // Set user info from URL parameters
-    const userName = getUrlParameter('user') || 'Anonymous Developer';
+    const userName = getUrlParameter('user') || 'Anonymous Human';
     const deploymentId = getUrlParameter('id') || 'DEP-' + Date.now();
-    const userClass = getUrlParameter('class') || 'Full Stack';
+    const userClass = getUrlParameter('class') || 'Confirmed.';
+
+    // Random alignment generator
+    const alignments = [
+      'Chaotic Neutral',
+      'Lawful Good',
+      'Chaotic Good',
+      'Neutral Evil',
+      'Lawful Evil',
+      'True Neutral',
+      'Chaotic Evil',
+      'Lawful Neutral',
+      'Neutral Good'
+    ];
+    
+    const randomAlignment = alignments[Math.floor(Math.random() * alignments.length)];
 
     document.getElementById('userName').textContent = userName;
     document.getElementById('deploymentId').textContent = deploymentId;
@@ -180,7 +195,7 @@
       { progress: 70, text: '[ ███████░░░░ ] 70%\nRunning compatibility tests...' },
       { progress: 85, text: '[ ████████░░░ ] 85%\nFinalizing deployment protocols...' },
       { progress: 95, text: '[ █████████░░ ] 95%\nEstablishing secure connection...' },
-      { progress: 100, text: '[ ██████████ ] 100%\n\n> DEPLOYMENT COMPLETE\n\nLooking for work: ' + userClass + '\nAlignment: Chaotic Neutral\nStatus: <span class="glitch">ACTIVE IN PRODUCTION</span>\n\nReady for employment opportunities...\n<span class="blinking">█</span>' }
+      { progress: 100, text: '[ ██████████ ] 100%\n\n> DEPLOYMENT COMPLETE\n\nLooking for work: ' + userClass + '\nAlignment: ' + randomAlignment + '\nStatus: <span class="glitch">ACTIVE IN PRODUCTION</span>\n\nReady for new opportunities...\n<span class="blinking">█</span>' }
     ];
 
     let currentStep = 0;
