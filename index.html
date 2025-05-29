@@ -6,18 +6,32 @@
   <title>Developer Deployment</title>
   <style>
     body {
-      background-color: #0d0d0d;
-      color: #39ff14;
+      background-color: #000000;
+      color: #00ff00;
       font-family: 'Courier New', Courier, monospace;
-      padding: 40px;
-      font-size: 1.2rem;
-      line-height: 1.6;
+      padding: 20px;
+      font-size: 1.1rem;
+      line-height: 1.4;
       overflow-x: hidden;
     }
     .terminal {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       white-space: pre-wrap;
+      background-color: #000000;
+      border: 2px solid #00ff00;
+      border-radius: 0;
+      padding: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    }
+    .terminal::before {
+      content: "TERMINAL v2.1.4 - DEPLOYMENT SYSTEM";
+      display: block;
+      color: #00ff00;
+      border-bottom: 1px solid #00ff00;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+      font-weight: bold;
     }
     .blinking {
       animation: blink 1s infinite;
@@ -35,23 +49,23 @@
       overflow: hidden;
     }
     .progress-fill {
-      background: linear-gradient(90deg, #39ff14, #00ff88);
+      background: linear-gradient(90deg, #00ff00, #00cc00);
       height: 100%;
       width: 0%;
       transition: width 0.3s ease;
       border-radius: 10px;
-      box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
     }
     .user-info {
-      color: #00ffff;
+      color: #00ff00;
       margin-bottom: 20px;
     }
     .deployment-id {
-      color: #ff6b35;
+      color: #ffff00;
       font-weight: bold;
     }
     .status-working {
-      color: #ffff00;
+      color: #00ffff;
       font-weight: bold;
     }
     .matrix-bg {
@@ -70,7 +84,7 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: linear-gradient(90deg, transparent, #39ff14, transparent);
+      background: linear-gradient(90deg, transparent, #00ff00, transparent);
       animation: scan 3s linear infinite;
       z-index: 1;
     }
@@ -127,8 +141,8 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-    const fontSize = 14;
+    const matrixChars = '01010101';
+    const fontSize = 12;
     const columns = canvas.width / fontSize;
     const drops = [];
     
@@ -137,10 +151,10 @@
     }
     
     function drawMatrix() {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      ctx.fillStyle = '#39ff14';
+      ctx.fillStyle = '#00ff00';
       ctx.font = fontSize + 'px monospace';
       
       for (let i = 0; i < drops.length; i++) {
@@ -180,7 +194,47 @@
       'Neutral Good'
     ];
     
+    // Random scents
+    const scents = [
+      'Existential Dread',
+      'The Color Purple',
+      'Wednesday Morning',
+      'Forgotten Dreams',
+      'Static Electricity',
+      'The Sound of Silence',
+      'Regret and Paprika',
+      'Digital Nostalgia',
+      'Expired Hope',
+      'Quantum Uncertainty',
+      'Your Childhood Bedroom',
+      'Unfinished Sentences',
+      'The Internet in 1997',
+      'Invisible Disappointment',
+      'Theoretical Physics'
+    ];
+    
+    // Random conversational animals
+    const conversationalStyles = [
+      'Philosophical Platypus in Crocs',
+      'Anxious Axolotl Wearing Cargo Shorts',
+      'Pretentious Pangolin in a Beret',
+      'Caffeinated Capybara with Reading Glasses',
+      'Melancholic Mantis Shrimp in Suspenders',
+      'Overthinking Octopus in a Turtleneck',
+      'Sarcastic Shoebill Stork in Flip-Flops',
+      'Existential Quokka Wearing Fingerless Gloves',
+      'Passive-Aggressive Pufferfish in a Vest',
+      'Neurotic Naked Mole Rat in Overalls',
+      'Oversharing Ocelot in Yoga Pants',
+      'Dramatic Dik-Dik in a Cape',
+      'Conspiracy Theorist Tapir in Tin Foil Hat',
+      'Depressed Dugong in Sweatpants',
+      'Motivational Manatee in a Power Suit'
+    ];
+    
     const randomAlignment = alignments[Math.floor(Math.random() * alignments.length)];
+    const randomScent = scents[Math.floor(Math.random() * scents.length)];
+    const randomStyle = conversationalStyles[Math.floor(Math.random() * conversationalStyles.length)];
 
     document.getElementById('userName').textContent = userName;
     document.getElementById('deploymentId').textContent = deploymentId;
@@ -195,7 +249,7 @@
       { progress: 70, text: '[ ███████░░░░ ] 70%\nRunning compatibility tests...' },
       { progress: 85, text: '[ ████████░░░ ] 85%\nFinalizing deployment protocols...' },
       { progress: 95, text: '[ █████████░░ ] 95%\nEstablishing secure connection...' },
-      { progress: 100, text: '[ ██████████ ] 100%\n\n> DEPLOYMENT COMPLETE\n\nLooking for work: ' + userClass + '\nAlignment: ' + randomAlignment + '\nStatus: <span class="glitch">ACTIVE IN PRODUCTION</span>\n\nReady for new opportunities...\n<span class="blinking">█</span>' }
+      { progress: 100, text: '[ ██████████ ] 100%\n\n> DEPLOYMENT COMPLETE\n\nLooking for work: ' + userClass + '\nAlignment: ' + randomAlignment + '\nSmells of: ' + randomScent + '\nConversational Style: ' + randomStyle + '\nStatus: <span class="glitch">ACTIVE IN PRODUCTION</span>\n\nReady for new opportunities...\n<span class="blinking">█</span>' }
     ];
 
     let currentStep = 0;
