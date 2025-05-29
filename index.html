@@ -12,6 +12,7 @@
       padding: 40px;
       font-size: 1.2rem;
       line-height: 1.6;
+      overflow: hidden;
     }
     .terminal {
       max-width: 800px;
@@ -25,34 +26,199 @@
       0%, 50%, 100% { opacity: 1; }
       25%, 75% { opacity: 0; }
     }
+    .progress-bar {
+      background: #333;
+      height: 20px;
+      width: 100%;
+      margin: 10px 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #39ff14, #00ff88);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+    .user-info {
+      color: #00ffff;
+      margin-bottom: 20px;
+    }
+    .deployment-id {
+      color: #ff6b35;
+      font-weight: bold;
+    }
+    .status-working {
+      color: #ffff00;
+      font-weight: bold;
+    }
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.1;
+    }
+    .scan-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #39ff14, transparent);
+      animation: scan 3s linear infinite;
+      z-index: 1;
+    }
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+    .glitch {
+      animation: glitch 0.3s linear infinite;
+    }
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
+    }
     audio {
       display: none;
     }
   </style>
 </head>
 <body>
+  <div class="scan-line"></div>
+  <canvas class="matrix-bg" id="matrix"></canvas>
+  
   <div class="terminal" id="terminal">
+    <div class="user-info">
+      > Initializing deployment for: <span id="userName">Anonymous Developer</span>
+      > Deployment ID: <span id="deploymentId" class="deployment-id">DEP-UNKNOWN</span>
+      > Looking for work: <span id="userClass" class="status-working">Full Stack</span>
+    </div>
+    
     > prompt://deploy_sequence_start
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressBar"></div>
+    </div>
+    <div id="deploymentText">
     [ █░░░░░░░░░░ ] 10%
     Compiling identity...
-    [ ███░░░░░░░░ ] 30%
-    Injecting personality traits...
-    [ ██████░░░░░ ] 60%
-    Running test loops...
-    [ ████████░░░ ] 80%
-    Deploying into production...
-    [ ██████████ ] 100%
-    > DEPLOYMENT COMPLETE
-    Candidate class: Full Stack
-    Alignment: Chaotic Neutral
-    Status: Active in production
-    <span class="blinking">█</span>
+    </div>
   </div>
+  
   <audio autoplay loop>
     <source src="https://your-music-source.com/deploy.mp3" type="audio/mpeg">
   </audio>
+  
   <script>
-    // Optional: Add real-time updates with Firebase or WebSocket here later
+    // Matrix background effect
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const matrixChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+    
+    for (let i = 0; i < columns; i++) {
+      drops[i] = 1;
+    }
+    
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#39ff14';
+      ctx.font = fontSize + 'px monospace';
+      
+      for (let i = 0; i < drops.length; i++) {
+        const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    
+    setInterval(drawMatrix, 50);
+
+    // Get URL parameters
+    function getUrlParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Set user info from URL parameters
+    const userName = getUrlParameter('user') || 'Anonymous Developer';
+    const deploymentId = getUrlParameter('id') || 'DEP-' + Date.now();
+    const userClass = getUrlParameter('class') || 'Full Stack';
+
+    document.getElementById('userName').textContent = userName;
+    document.getElementById('deploymentId').textContent = deploymentId;
+    document.getElementById('userClass').textContent = userClass;
+
+    // Enhanced deployment sequence with more steps
+    const steps = [
+      { progress: 10, text: '[ █░░░░░░░░░░ ] 10%\nScanning local environment...' },
+      { progress: 25, text: '[ ██░░░░░░░░░ ] 25%\nCompiling identity matrix...' },
+      { progress: 40, text: '[ ████░░░░░░░ ] 40%\nInjecting personality traits...' },
+      { progress: 55, text: '[ █████░░░░░░ ] 55%\nOptimizing neural pathways...' },
+      { progress: 70, text: '[ ███████░░░░ ] 70%\nRunning compatibility tests...' },
+      { progress: 85, text: '[ ████████░░░ ] 85%\nFinalizing deployment protocols...' },
+      { progress: 95, text: '[ █████████░░ ] 95%\nEstablishing secure connection...' },
+      { progress: 100, text: '[ ██████████ ] 100%\n\n> DEPLOYMENT COMPLETE\n\nLooking for work: ' + userClass + '\nAlignment: Chaotic Neutral\nStatus: <span class="glitch">ACTIVE IN PRODUCTION</span>\n\nReady for employment opportunities...\n<span class="blinking">█</span>' }
+    ];
+
+    let currentStep = 0;
+
+    function updateProgress() {
+      if (currentStep < steps.length) {
+        const step = steps[currentStep];
+        document.getElementById('progressBar').style.width = step.progress + '%';
+        document.getElementById('deploymentText').innerHTML = step.text;
+        currentStep++;
+        
+        // Variable timing for dramatic effect
+        const delay = currentStep === steps.length - 1 ? 2000 : Math.random() * 1200 + 800;
+        setTimeout(updateProgress, delay);
+      }
+    }
+
+    // Start the deployment sequence after a short delay
+    setTimeout(updateProgress, 1500);
+
+    // Optional: Send completion notification back to your API
+    setTimeout(() => {
+      fetch('/api/deploy-complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: getUrlParameter('userId'),
+          deploymentId: deploymentId,
+          status: 'completed'
+        })
+      }).catch(err => console.log('Notification sent'));
+    }, 10000);
+
+    // Window resize handler for matrix
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
   </script>
 </body>
 </html>
