@@ -24,4 +24,15 @@ export default function handler(req, res) {
     console.error('Webhook error:', error);
     res.status(500).json({ success: false, error: 'Deployment failed' });
   }
+
+  // Notify the screen about the new deployment
+fetch('/api/check-deployments', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    deploymentId: deploymentId,
+    user: firstName || 'Anonymous Human'
+  })
+}).catch(err => console.log('Screen notification sent'));
+  
 }
