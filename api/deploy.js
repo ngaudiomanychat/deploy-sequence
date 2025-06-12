@@ -1,5 +1,5 @@
-// Store active screen connections
-let screenConnections = new Set();
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,11 +11,14 @@ export default async function handler(req, res) {
     
     console.log('🚀 Webhook fired! Triggering screen redirect...');
     
-    // Store the redirect signal
-    global.redirectSignal = {
+    // Create redirect signal file in /tmp directory
+    const signalFile = '/tmp/redirect-signal.json';
+    const signal = {
       timestamp: Date.now(),
       triggered: true
     };
+    
+    fs.writeFileSync(signalFile, JSON.stringify(signal));
     
     res.status(200).json({
       success: true,
