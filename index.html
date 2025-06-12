@@ -106,6 +106,17 @@
     audio {
       display: none;
     }
+    .return-timer {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      color: #ffff00;
+      font-size: 14px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      border: 1px solid #ffff00;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -127,6 +138,10 @@
     [ █░░░░░░░░░░ ] 10%
     Compiling identity...
     </div>
+  </div>
+  
+  <div class="return-timer" id="returnTimer" style="display: none;">
+    Returning to waiting screen in: <span id="countdown">17</span>s
   </div>
   
   <script>
@@ -190,23 +205,23 @@
       'Neutral Good'
     ];
     
-    // Random scents
+    // Random scents (silly flower names)
     const scents = [
-      'Existential Dread',
-      'The Color Purple',
-      'Wednesday Morning',
-      'Forgotten Dreams',
-      'Static Electricity',
-      'The Sound of Silence',
-      'Regret and Paprika',
-      'Digital Nostalgia',
-      'Expired Hope',
-      'Quantum Uncertainty',
-      'Your Childhood Bedroom',
-      'Unfinished Sentences',
-      'The Internet in 1997',
-      'Invisible Disappointment',
-      'Theoretical Physics'
+      'Giggling Snapdragons',
+      'Sneezing Daisies',
+      'Tickled Tulips',
+      'Burping Buttercups',
+      'Hiccupping Hibiscus',
+      'Snorting Sunflowers',
+      'Gigantic Geraniums',
+      'Bouncing Begonias',
+      'Wobbly Wisteria',
+      'Tipsy Tulips',
+      'Dizzy Daffodils',
+      'Sleepy Snapdragons',
+      'Confused Carnations',
+      'Dancing Dandelions',
+      'Stumbling Sweet Peas'
     ];
     
     // Random conversational animals
@@ -257,14 +272,40 @@
         document.getElementById('deploymentText').innerHTML = step.text;
         currentStep++;
         
-        // Variable timing for dramatic effect
-        const delay = currentStep === steps.length - 1 ? 2000 : Math.random() * 1200 + 800;
+        // Faster timing - half the original speed
+        const delay = currentStep === steps.length - 1 ? 1000 : Math.random() * 600 + 400;
         setTimeout(updateProgress, delay);
+      } else {
+        // Analysis complete, start return countdown
+        startReturnCountdown();
       }
     }
 
-    // Start the deployment sequence after a short delay
-    setTimeout(updateProgress, 1500);
+    // Auto-return timer function
+    function startReturnCountdown() {
+      console.log('⏱️ Analysis complete - starting 17 second countdown to return to waiting screen');
+      
+      let timeLeft = 17;
+      const timerElement = document.getElementById('returnTimer');
+      const countdownElement = document.getElementById('countdown');
+      
+      // Show the timer
+      timerElement.style.display = 'block';
+      
+      const countdown = setInterval(() => {
+        timeLeft--;
+        countdownElement.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          console.log('🔄 Returning to waiting screen...');
+          window.location.href = 'https://deploy-sequence.vercel.app/screen.html';
+        }
+      }, 1000);
+    }
+
+    // Start the deployment sequence after a shorter delay
+    setTimeout(updateProgress, 750);
 
     // Optional: Send completion notification back to your API
     setTimeout(() => {
