@@ -1,20 +1,19 @@
-import fs from 'fs';
+let lastDeployment = null;
+let processedDeployments = new Set();
 
 export default function handler(req, res) {
   try {
-    const signalFile = '/tmp/redirect-signal.json';
-    
-    // Check if signal file exists
-    if (fs.existsSync(signalFile)) {
-      const signal = JSON.parse(fs.readFileSync(signalFile, 'utf8'));
+    // Check for redirect signal
+    if (lastDeployment && !processedDeployments.has(lastDeployment.id)) {
+      // Mark as processed
+      processedDeployments.add(lastDeployment.id);
       
-      // Delete the file so it only triggers once
-      fs.unlinkSync(signalFile);
+      console.log(`📺 Screen redirect triggered: ${lastDeployment.id}`);
       
       res.status(200).json({
         redirect: true,
-        message: 'Redirect triggered!',
-        timestamp: signal.timestamp
+        deployment: lastDeployment,
+        message: 'Redirect triggered!'
       });
     } else {
       res.status(200).json({
