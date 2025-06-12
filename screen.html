@@ -1,35 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Screen Test</title>
+  <title>Deploy Screen</title>
   <style>
-    body { background: black; color: lime; font-family: monospace; padding: 50px; font-size: 24px; }
+    body { 
+      background: black; 
+      color: lime; 
+      font-family: monospace; 
+      padding: 50px; 
+      font-size: 24px; 
+      text-align: center;
+    }
+    .deployment { display: none; }
+    .deployment.active { display: block; animation: fadeIn 1s; }
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
   </style>
 </head>
 <body>
-  <div id="status">⚫ Starting...</div>
-  <div id="content">Waiting for deployments...</div>
+  <div id="waiting">🖥️ Waiting for deployments... <span id="status">⚫</span></div>
+  
+  <div id="deployment" class="deployment">
+    <h1>🚀 DEPLOYMENT ACTIVE</h1>
+    <p>User: <span id="user">Unknown</span></p>
+    <p>Alignment: <span id="alignment">Unknown</span></p>
+    <p>Smells of: <span id="scent">Unknown</span></p>
+    <p>Style: <span id="style">Unknown</span></p>
+  </div>
 
   <script>
-    console.log('Script starting...');
+    let isActive = false;
+    
+    function startDeployment(data) {
+      if (isActive) return;
+      isActive = true;
+      
+      document.getElementById('waiting').style.display = 'none';
+      
+      const deployDiv = document.getElementById('deployment');
+      deployDiv.classList.add('active');
+      
+      document.getElementById('user').textContent = data.user || 'Anonymous';
+      document.getElementById('alignment').textContent = data.traits?.alignment || 'Unknown';
+      document.getElementById('scent').textContent = data.traits?.scent || 'Unknown';
+      document.getElementById('style').textContent = data.traits?.style || 'Unknown';
+      
+      // Reset after 8 seconds
+      setTimeout(() => {
+        deployDiv.classList.remove('active');
+        document.getElementById('waiting').style.display = 'block';
+        isActive = false;
+      }, 8000);
+    }
     
     async function checkAPI() {
       try {
         const response = await fetch('/api/screen-check');
         const data = await response.json();
-        document.getElementById('status').textContent = '🟢 Connected';
-        console.log('API check successful:', data);
+        document.getElementById('status').textContent = '🟢';
+        
+        if (data.newDeployment && !isActive) {
+          console.log('New deployment!', data.deployment);
+          startDeployment(data.deployment);
+        }
       } catch (error) {
-        document.getElementById('status').textContent = '🔴 Error: ' + error.message;
-        console.error('API check failed:', error);
+        document.getElementById('status').textContent = '🔴';
+        console.error('Error:', error);
       }
     }
     
-    // Test every 3 seconds
-    setInterval(checkAPI, 3000);
-    checkAPI(); // Initial check
-    
-    console.log('Script loaded successfully');
+    setInterval(checkAPI, 2000);
+    checkAPI();
   </script>
 </body>
 </html>
