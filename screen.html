@@ -120,15 +120,11 @@
       }
     }
     
-    // Check every 5 seconds for testing (was 1 second)
-    // setInterval(checkForWebhook, 5000);
-    
-    // Disable auto-checking for debugging - use manual trigger instead
-    console.log('🔧 Auto-checking disabled for debugging');
-    console.log('⌨️ Type "checkForWebhook()" in console to manually test');
+    // Check every 2 seconds for immediate response  
+    setInterval(checkForWebhook, 2000);
     
     // Initial check
-    // checkForWebhook();
+    checkForWebhook();
     
     console.log('📡 Monitoring for ManyChat webhooks...');
   </script>
