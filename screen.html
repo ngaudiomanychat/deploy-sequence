@@ -81,25 +81,32 @@
         // Check if redirect was triggered
         if (data.redirect) {
           console.log('🚀 Webhook fired! Redirecting to analysis page...');
+          console.log('Redirect data:', data);
           
           // Show redirect message
           document.querySelector('.waiting-message').style.display = 'none';
           document.getElementById('connectionStatus').style.display = 'none';
           document.getElementById('redirectMessage').style.display = 'block';
           
+          console.log('📺 Redirect message shown, starting countdown...');
+          
           // Redirect to homepage/analysis page after brief delay
           setTimeout(() => {
-            console.log('🔄 Attempting redirect to /');
+            console.log('🔄 2 seconds elapsed, attempting redirect now...');
+            console.log('Current URL:', window.location.href);
             try {
               // Try multiple redirect methods
+              console.log('Trying window.location.replace...');
               window.location.replace('https://deploy-sequence.vercel.app/');
             } catch (error) {
               console.error('Replace redirect failed:', error);
               try {
+                console.log('Trying window.location.assign...');
                 window.location.assign('https://deploy-sequence.vercel.app/');
               } catch (error2) {
                 console.error('Assign redirect failed:', error2);
                 // Last resort - reload with new URL
+                console.log('Trying direct window.location...');
                 window.location = 'https://deploy-sequence.vercel.app/';
               }
             }
@@ -113,11 +120,15 @@
       }
     }
     
-    // Check every 1 second for immediate response
-    setInterval(checkForWebhook, 1000);
+    // Check every 5 seconds for testing (was 1 second)
+    // setInterval(checkForWebhook, 5000);
+    
+    // Disable auto-checking for debugging - use manual trigger instead
+    console.log('🔧 Auto-checking disabled for debugging');
+    console.log('⌨️ Type "checkForWebhook()" in console to manually test');
     
     // Initial check
-    checkForWebhook();
+    // checkForWebhook();
     
     console.log('📡 Monitoring for ManyChat webhooks...');
   </script>
