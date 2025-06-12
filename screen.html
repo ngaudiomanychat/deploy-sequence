@@ -5,156 +5,198 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deploy Screen Monitor</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
       background-color: #000000;
       color: #00ff00;
       font-family: 'Courier New', Courier, monospace;
-      padding: 20px;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       line-height: 1.4;
       overflow: hidden;
-      margin: 0;
+      height: 100vh;
+      width: 100vw;
     }
+    
     .terminal {
       width: 100%;
       height: 100vh;
-      white-space: pre-wrap;
       background-color: #000000;
-      border: 3px solid #00ff00;
-      padding: 30px;
-      box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
-      box-sizing: border-box;
+      border: 4px solid #00ff00;
+      padding: 40px;
+      box-shadow: inset 0 0 100px rgba(0, 255, 0, 0.1);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
+      position: relative;
     }
+    
     .terminal::before {
-      content: "DEPLOYMENT MONITOR v3.0 - WAITING FOR SIGNAL";
-      display: block;
+      content: "🖥️ DEPLOYMENT MONITOR v4.0 - INSTANT RESPONSE MODE";
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
       color: #00ff00;
       border-bottom: 2px solid #00ff00;
-      padding-bottom: 15px;
-      margin-bottom: 30px;
+      padding-bottom: 10px;
       font-weight: bold;
       font-size: 1.1em;
     }
+    
     .waiting {
-      color: #ffff00;
-      font-size: 1.5rem;
+      color: #00ffff;
+      font-size: 2rem;
       animation: pulse 2s infinite;
+      text-align: center;
     }
+    
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      50% { opacity: 0.7; }
     }
+    
     .deployment-active {
       display: none;
+      width: 100%;
+      max-width: 1000px;
     }
+    
     .deployment-active.show {
       display: block;
-      animation: slideIn 1s ease-out;
+      animation: deploymentSlide 0.8s ease-out;
     }
-    @keyframes slideIn {
-      from { transform: translateY(50px); opacity: 0; }
+    
+    @keyframes deploymentSlide {
+      from { transform: translateY(100px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+    
+    .deployment-header {
+      color: #ffff00;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #ffff00;
+    }
+    
     .progress-bar {
       background: #333;
-      height: 25px;
-      width: 80%;
-      margin: 20px auto;
-      border-radius: 12px;
+      height: 30px;
+      width: 100%;
+      margin: 25px 0;
+      border-radius: 15px;
       overflow: hidden;
     }
+    
     .progress-fill {
       background: linear-gradient(90deg, #00ff00, #00cc00);
       height: 100%;
       width: 0%;
-      transition: width 0.3s ease;
-      border-radius: 12px;
-      box-shadow: 0 0 25px rgba(0, 255, 0, 0.6);
+      transition: width 0.4s ease;
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
     }
-    .deployment-id {
-      color: #ffff00;
-      font-weight: bold;
-      font-size: 1.2em;
+    
+    .progress-text {
+      color: #00ff00;
+      font-size: 1.3rem;
+      margin: 20px 0;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .alignment {
-      color: #ff6600;
+    
+    .deployment-results {
+      display: none;
+      font-size: 1.4rem;
+      line-height: 1.8;
+      margin-top: 30px;
     }
-    .scent {
-      color: #ff00ff;
+    
+    .trait-alignment { color: #ff6600; font-weight: bold; }
+    .trait-scent { color: #ff00ff; font-weight: bold; }
+    .trait-style { color: #00ffff; font-weight: bold; }
+    .status-active { 
+      color: #ff0000; 
+      font-weight: bold; 
+      animation: statusGlow 2s infinite;
     }
-    .style {
-      color: #00ffff;
-    }
-    .status {
-      color: #ff0000;
-      font-weight: bold;
-      animation: glow 2s infinite;
-    }
-    @keyframes glow {
+    
+    @keyframes statusGlow {
       0%, 100% { text-shadow: 0 0 5px #ff0000; }
-      50% { text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000; }
+      50% { text-shadow: 0 0 20px #ff0000; }
     }
+    
     .blinking {
       animation: blink 1s infinite;
     }
+    
     @keyframes blink {
       0%, 50%, 100% { opacity: 1; }
       25%, 75% { opacity: 0; }
     }
-    .scan-line {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #00ff00, transparent);
-      animation: scan 4s linear infinite;
-      z-index: 1000;
+    
+    .connection-status {
+      position: absolute;
+      bottom: 20px;
+      left: 40px;
+      font-size: 0.8rem;
+      color: #666;
     }
-    @keyframes scan {
-      0% { top: 0; }
-      100% { top: 100%; }
+    
+    .connection-status.connected {
+      color: #00ff00;
     }
   </style>
 </head>
 <body>
-  <div class="scan-line"></div>
-  
-  <div class="terminal" id="terminal">
+  <div class="terminal">
     <div class="waiting" id="waitingMessage">
-      🖥️ SCREEN READY<br><br>
-      Listening for deployment signals...<br>
-      Status: STANDBY<br><br>
+      🖥️ SCREEN ARMED<br><br>
+      Waiting for deployment signals...<br>
+      <div style="font-size: 1.2rem; margin-top: 20px;">
+        Status: <span style="color: #ffff00;">MONITORING</span>
+      </div><br>
       <span class="blinking">█</span>
     </div>
     
     <div class="deployment-active" id="deploymentContent">
-      <div id="deploymentText">
-        > Initializing deployment...<br>
-        > Deployment ID: <span class="deployment-id" id="deployId">DEP-UNKNOWN</span><br><br>
-        
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressBar"></div>
-        </div>
-        
-        <div id="progressText">[ █░░░░░░░░░░ ] 10%<br>Compiling identity...</div>
+      <div class="deployment-header" id="deploymentHeader">
+        🚀 DEPLOYING: <span id="deployUser">UNKNOWN</span>
       </div>
       
-      <div id="finalResults" style="display: none;">
-        <br>> DEPLOYMENT COMPLETE<br><br>
-        Looking for work: <span style="color: #00ffff;">Confirmed.</span><br>
-        Alignment: <span class="alignment" id="alignmentText">Unknown</span><br>
-        Smells of: <span class="scent" id="scentText">Mystery</span><br>
-        Conversational Style: <span class="style" id="styleText">Unknown Entity</span><br>
-        Status: <span class="status">ACTIVE IN PRODUCTION</span><br><br>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+      
+      <div class="progress-text" id="progressText">
+        [ █░░░░░░░░░░ ] 10%<br>Initializing deployment sequence...
+      </div>
+      
+      <div class="deployment-results" id="deploymentResults">
+        <div style="color: #ffff00; font-size: 1.6rem; margin-bottom: 20px;">
+          ⚡ DEPLOYMENT COMPLETE ⚡
+        </div>
+        
+        Looking for work: <span style="color: #00ffff; font-weight: bold;">CONFIRMED</span><br>
+        Alignment: <span class="trait-alignment" id="traitAlignment">Unknown</span><br>
+        Smells of: <span class="trait-scent" id="traitScent">Mystery</span><br>
+        Conversational Style: <span class="trait-style" id="traitStyle">Unknown</span><br><br>
+        Status: <span class="status-active">ACTIVE IN PRODUCTION</span><br><br>
         Ready for new opportunities...<br>
         <span class="blinking">█</span>
       </div>
+    </div>
+    
+    <div class="connection-status" id="connectionStatus">
+      ⚫ Initializing...
     </div>
   </div>
 
@@ -162,73 +204,46 @@
     let isDeploymentActive = false;
     let currentStep = 0;
     
-    // Deployment animation steps
-    const steps = [
-      { progress: 10, text: '[ █░░░░░░░░░░ ] 10%<br>Scanning local environment...' },
-      { progress: 25, text: '[ ██░░░░░░░░░ ] 25%<br>Compiling identity matrix...' },
-      { progress: 40, text: '[ ████░░░░░░░ ] 40%<br>Injecting personality traits...' },
-      { progress: 55, text: '[ █████░░░░░░ ] 55%<br>Optimizing neural pathways...' },
-      { progress: 70, text: '[ ███████░░░░ ] 70%<br>Running compatibility tests...' },
-      { progress: 85, text: '[ ████████░░░ ] 85%<br>Finalizing deployment protocols...' },
-      { progress: 95, text: '[ █████████░░ ] 95%<br>Establishing secure connection...' },
-      { progress: 100, text: '[ ██████████ ] 100%<br>Deployment sequence complete!' }
+    const deploymentSteps = [
+      { progress: 15, text: '[ ██░░░░░░░░░ ] 15%<br>⚡ Scanning deployment target...' },
+      { progress: 30, text: '[ ███░░░░░░░░ ] 30%<br>🧬 Compiling identity matrix...' },
+      { progress: 45, text: '[ ████░░░░░░░ ] 45%<br>🎭 Injecting personality traits...' },
+      { progress: 60, text: '[ ██████░░░░░ ] 60%<br>🧠 Optimizing neural pathways...' },
+      { progress: 75, text: '[ ███████░░░░ ] 75%<br>🔬 Running compatibility tests...' },
+      { progress: 90, text: '[ █████████░░ ] 90%<br>📡 Establishing connection...' },
+      { progress: 100, text: '[ ██████████ ] 100%<br>✅ Deployment complete!' }
     ];
 
-    // Random data generators
-    const alignments = [
-      'Chaotic Neutral', 'Lawful Good', 'Chaotic Good', 'Neutral Evil',
-      'Lawful Evil', 'True Neutral', 'Chaotic Evil', 'Lawful Neutral', 'Neutral Good'
-    ];
-    
-    const scents = [
-      'Existential Dread', 'The Color Purple', 'Wednesday Morning', 'Forgotten Dreams',
-      'Static Electricity', 'The Sound of Silence', 'Regret and Paprika', 'Digital Nostalgia',
-      'Expired Hope', 'Quantum Uncertainty', 'Your Childhood Bedroom', 'Unfinished Sentences',
-      'The Internet in 1997', 'Invisible Disappointment', 'Theoretical Physics'
-    ];
-    
-    const conversationalStyles = [
-      'Philosophical Platypus in Crocs', 'Anxious Axolotl Wearing Cargo Shorts',
-      'Pretentious Pangolin in a Beret', 'Caffeinated Capybara with Reading Glasses',
-      'Melancholic Mantis Shrimp in Suspenders', 'Overthinking Octopus in a Turtleneck',
-      'Sarcastic Shoebill Stork in Flip-Flops', 'Existential Quokka Wearing Fingerless Gloves',
-      'Passive-Aggressive Pufferfish in a Vest', 'Neurotic Naked Mole Rat in Overalls',
-      'Oversharing Ocelot in Yoga Pants', 'Dramatic Dik-Dik in a Cape',
-      'Conspiracy Theorist Tapir in Tin Foil Hat', 'Depressed Dugong in Sweatpants',
-      'Motivational Manatee in a Power Suit'
-    ];
-
-    function getRandomItem(array) {
-      return array[Math.floor(Math.random() * array.length)];
-    }
-
-    function startDeployment() {
+    function startDeployment(deploymentData) {
       if (isDeploymentActive) return;
       
+      console.log('🚀 Starting deployment:', deploymentData);
       isDeploymentActive = true;
       currentStep = 0;
       
-      // Hide waiting message, show deployment
       document.getElementById('waitingMessage').style.display = 'none';
       document.getElementById('deploymentContent').classList.add('show');
-      document.getElementById('finalResults').style.display = 'none';
+      document.getElementById('deploymentResults').style.display = 'none';
       
-      // Generate random deployment ID
-      const deployId = 'DEP-' + Date.now();
-      document.getElementById('deployId').textContent = deployId;
+      document.getElementById('deployUser').textContent = deploymentData.user || 'ANONYMOUS';
       
-      // Start progress animation
+      if (deploymentData.traits) {
+        document.getElementById('traitAlignment').textContent = deploymentData.traits.alignment;
+        document.getElementById('traitScent').textContent = deploymentData.traits.scent;
+        document.getElementById('traitStyle').textContent = deploymentData.traits.style;
+      }
+      
       updateProgress();
     }
 
     function updateProgress() {
-      if (currentStep < steps.length) {
-        const step = steps[currentStep];
+      if (currentStep < deploymentSteps.length) {
+        const step = deploymentSteps[currentStep];
         document.getElementById('progressBar').style.width = step.progress + '%';
         document.getElementById('progressText').innerHTML = step.text;
         currentStep++;
         
-        const delay = currentStep === steps.length ? 2000 : Math.random() * 1000 + 800;
+        const delay = currentStep === deploymentSteps.length ? 1500 : Math.random() * 800 + 600;
         setTimeout(updateProgress, delay);
       } else {
         showFinalResults();
@@ -236,17 +251,9 @@
     }
 
     function showFinalResults() {
-      // Hide progress, show final results
       document.getElementById('progressText').style.display = 'none';
-      document.getElementById('finalResults').style.display = 'block';
-      
-      // Populate random traits
-      document.getElementById('alignmentText').textContent = getRandomItem(alignments);
-      document.getElementById('scentText').textContent = getRandomItem(scents);
-      document.getElementById('styleText').textContent = getRandomItem(conversationalStyles);
-      
-      // Reset after 10 seconds
-      setTimeout(resetScreen, 10000);
+      document.getElementById('deploymentResults').style.display = 'block';
+      setTimeout(resetScreen, 8000);
     }
 
     function resetScreen() {
@@ -257,32 +264,24 @@
       document.getElementById('progressBar').style.width = '0%';
     }
 
-    // Check for new deployments every 3 seconds
-    function checkForDeployments() {
-      fetch('/api/check-deployments')
-        .then(response => response.json())
-        .then(data => {
-          if (data.newDeployment && !isDeploymentActive) {
-            startDeployment();
-          }
-        })
-        .catch(err => {
-          // If API doesn't exist yet, just trigger demo deployments occasionally
-          if (!isDeploymentActive && Math.random() < 0.1) {
-            startDeployment();
-          }
-        });
+    async function checkForDeployments() {
+      try {
+        const response = await fetch('/api/screen-check');
+        const data = await response.json();
+        
+        document.getElementById('connectionStatus').textContent = '🟢 Connected';
+        document.getElementById('connectionStatus').className = 'connection-status connected';
+        
+        if (data.newDeployment && !isDeploymentActive) {
+          console.log('📺 New deployment detected!');
+          startDeployment(data.deployment);
+        }
+        
+      } catch (error) {
+        document.getElementById('connectionStatus').textContent = '🔴 Error';
+        console.error('Check failed:', error);
+      }
     }
 
-    // Start checking for deployments
-    setInterval(checkForDeployments, 3000);
-
-    // Manual trigger for testing (press spacebar)
-    document.addEventListener('keydown', function(e) {
-      if (e.code === 'Space' && !isDeploymentActive) {
-        startDeployment();
-      }
-    });
-  </script>
-</body>
-</html>
+    // Check every 1 second for instant response
+    setInterval(checkForDeployments, 1000);
