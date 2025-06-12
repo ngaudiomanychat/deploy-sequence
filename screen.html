@@ -89,8 +89,21 @@
           
           // Redirect to homepage/analysis page after brief delay
           setTimeout(() => {
-            window.location.href = '/';
-          }, 1500); // 1.5 second delay to show the message
+            console.log('🔄 Attempting redirect to /');
+            try {
+              // Try multiple redirect methods
+              window.location.replace('https://deploy-sequence.vercel.app/');
+            } catch (error) {
+              console.error('Replace redirect failed:', error);
+              try {
+                window.location.assign('https://deploy-sequence.vercel.app/');
+              } catch (error2) {
+                console.error('Assign redirect failed:', error2);
+                // Last resort - reload with new URL
+                window.location = 'https://deploy-sequence.vercel.app/';
+              }
+            }
+          }, 2000); // 2 second delay
         }
         
       } catch (error) {
