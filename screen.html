@@ -1,75 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Deploy Screen</title>
+  <title>Waiting for Analysis</title>
   <style>
     body { 
       background: black; 
       color: lime; 
       font-family: monospace; 
       padding: 50px; 
-      font-size: 24px; 
+      font-size: 28px; 
       text-align: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
-    .deployment { display: none; }
-    .deployment.active { display: block; animation: fadeIn 1s; }
-    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    
+    .waiting-message {
+      margin-bottom: 30px;
+    }
+    
+    .status {
+      font-size: 18px;
+      color: #666;
+      margin-top: 20px;
+    }
+    
+    .status.connected {
+      color: #00ff00;
+    }
+    
+    .blinking {
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75% { opacity: 0; }
+    }
+    
+    .redirect-message {
+      color: #ffff00;
+      font-size: 24px;
+      animation: pulse 0.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
   </style>
 </head>
 <body>
-  <div id="waiting">🖥️ Waiting for deployments... <span id="status">⚫</span></div>
+  <div class="waiting-message">
+    🖥️ ANALYSIS SCREEN READY<br><br>
+    <span class="blinking">█</span>
+  </div>
   
-  <div id="deployment" class="deployment">
-    <h1>🚀 DEPLOYMENT ACTIVE</h1>
-    <p>User: <span id="user">Unknown</span></p>
-    <p>Alignment: <span id="alignment">Unknown</span></p>
-    <p>Smells of: <span id="scent">Unknown</span></p>
-    <p>Style: <span id="style">Unknown</span></p>
+  <div class="status" id="connectionStatus">⚫ Initializing...</div>
+  
+  <div id="redirectMessage" class="redirect-message" style="display: none;">
+    🚀 TRIGGER DETECTED!<br>
+    Loading analysis...
   </div>
 
   <script>
-    let isActive = false;
+    console.log('🖥️ Redirect screen loaded');
     
-    function startDeployment(data) {
-      if (isActive) return;
-      isActive = true;
-      
-      document.getElementById('waiting').style.display = 'none';
-      
-      const deployDiv = document.getElementById('deployment');
-      deployDiv.classList.add('active');
-      
-      document.getElementById('user').textContent = data.user || 'Anonymous';
-      document.getElementById('alignment').textContent = data.traits?.alignment || 'Unknown';
-      document.getElementById('scent').textContent = data.traits?.scent || 'Unknown';
-      document.getElementById('style').textContent = data.traits?.style || 'Unknown';
-      
-      // Reset after 8 seconds
-      setTimeout(() => {
-        deployDiv.classList.remove('active');
-        document.getElementById('waiting').style.display = 'block';
-        isActive = false;
-      }, 8000);
-    }
-    
-    async function checkAPI() {
+    async function checkForWebhook() {
       try {
         const response = await fetch('/api/screen-check');
         const data = await response.json();
-        document.getElementById('status').textContent = '🟢';
         
-        if (data.newDeployment && !isActive) {
-          console.log('New deployment!', data.deployment);
-          startDeployment(data.deployment);
+        // Update connection status
+        const statusEl = document.getElementById('connectionStatus');
+        statusEl.textContent = '🟢 Connected - Monitoring webhooks';
+        statusEl.className = 'status connected';
+        
+        // Check if webhook was triggered
+        if (data.newDeployment) {
+          console.log('🚀 Webhook detected! Redirecting to analysis page...');
+          
+          // Show redirect message
+          document.querySelector('.waiting-message').style.display = 'none';
+          document.getElementById('connectionStatus').style.display = 'none';
+          document.getElementById('redirectMessage').style.display = 'block';
+          
+          // Redirect to homepage/analysis page after brief delay
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1500); // 1.5 second delay to show the message
         }
+        
       } catch (error) {
-        document.getElementById('status').textContent = '🔴';
-        console.error('Error:', error);
+        console.error('Connection error:', error);
+        document.getElementById('connectionStatus').textContent = '🔴 Connection Error';
+        document.getElementById('connectionStatus').className = 'status';
       }
     }
     
-    setInterval(checkAPI, 2000);
-    checkAPI();
+    // Check every 1 second for immediate response
+    setInterval(checkForWebhook, 1000);
+    
+    // Initial check
+    checkForWebhook();
+    
+    console.log('📡 Monitoring for ManyChat webhooks...');
   </script>
 </body>
 </html>
