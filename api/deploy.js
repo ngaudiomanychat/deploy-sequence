@@ -1,3 +1,6 @@
+// Store active screen connections
+let screenConnections = new Set();
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -6,16 +9,17 @@ export default async function handler(req, res) {
   try {
     const { message } = req.body;
     
-    console.log('🚀 Deploy sequence triggered!');
-    console.log('Message:', message);
+    console.log('🚀 Webhook fired! Triggering screen redirect...');
     
-    // Instead of storing, trigger immediate redirect
-    // You could use Server-Sent Events, WebSockets, or a simpler approach
+    // Store the redirect signal
+    global.redirectSignal = {
+      timestamp: Date.now(),
+      triggered: true
+    };
     
     res.status(200).json({
       success: true,
-      message: '🚀 Deployment initiated!',
-      redirect: true
+      message: '🚀 Screen redirect triggered!'
     });
 
   } catch (error) {
