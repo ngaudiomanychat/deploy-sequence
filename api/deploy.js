@@ -1,5 +1,6 @@
-import fs from 'fs';
-import path from 'path';
+// Use the same storage approach that was working before
+let lastDeployment = null;
+let processedDeployments = new Set();
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,18 +12,20 @@ export default async function handler(req, res) {
     
     console.log('🚀 Webhook fired! Triggering screen redirect...');
     
-    // Create redirect signal file in /tmp directory
-    const signalFile = '/tmp/redirect-signal.json';
-    const signal = {
+    // Store a simple redirect signal using the existing system
+    lastDeployment = {
+      id: `REDIRECT-${Date.now()}`,
       timestamp: Date.now(),
-      triggered: true
+      type: 'redirect',
+      message: 'Screen redirect triggered'
     };
     
-    fs.writeFileSync(signalFile, JSON.stringify(signal));
+    console.log('📺 Redirect signal stored:', lastDeployment.id);
     
     res.status(200).json({
       success: true,
-      message: '🚀 Screen redirect triggered!'
+      message: '🚀 Screen redirect triggered!',
+      redirectId: lastDeployment.id
     });
 
   } catch (error) {
