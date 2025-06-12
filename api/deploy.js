@@ -1,6 +1,4 @@
-// Use the same storage approach that was working before
-let lastDeployment = null;
-let processedDeployments = new Set();
+import { setDeployment } from './shared-state.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,20 +10,19 @@ export default async function handler(req, res) {
     
     console.log('🚀 Webhook fired! Triggering screen redirect...');
     
-    // Store a simple redirect signal using the existing system
-    lastDeployment = {
+    const deployment = {
       id: `REDIRECT-${Date.now()}`,
       timestamp: Date.now(),
       type: 'redirect',
       message: 'Screen redirect triggered'
     };
     
-    console.log('📺 Redirect signal stored:', lastDeployment.id);
+    setDeployment(deployment);
     
     res.status(200).json({
       success: true,
       message: '🚀 Screen redirect triggered!',
-      redirectId: lastDeployment.id
+      redirectId: deployment.id
     });
 
   } catch (error) {
