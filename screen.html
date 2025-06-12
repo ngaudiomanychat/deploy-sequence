@@ -78,9 +78,9 @@
         statusEl.textContent = '🟢 Connected - Monitoring webhooks';
         statusEl.className = 'status connected';
         
-        // Check if webhook was triggered
-        if (data.newDeployment) {
-          console.log('🚀 Webhook detected! Redirecting to analysis page...');
+        // Check if redirect was triggered
+        if (data.redirect) {
+          console.log('🚀 Webhook fired! Redirecting to analysis page...');
           
           // Show redirect message
           document.querySelector('.waiting-message').style.display = 'none';
