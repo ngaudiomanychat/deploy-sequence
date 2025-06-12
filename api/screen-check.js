@@ -1,18 +1,17 @@
-let lastDeployment = null;
-let processedDeployments = new Set();
+import { getDeployment, markAsProcessed, isProcessed } from './shared-state.js';
 
 export default function handler(req, res) {
   try {
-    // Check for redirect signal
-    if (lastDeployment && !processedDeployments.has(lastDeployment.id)) {
-      // Mark as processed
-      processedDeployments.add(lastDeployment.id);
+    const deployment = getDeployment();
+    
+    if (deployment && !isProcessed(deployment.id)) {
+      markAsProcessed(deployment.id);
       
-      console.log(`📺 Screen redirect triggered: ${lastDeployment.id}`);
+      console.log(`📺 Screen redirect triggered: ${deployment.id}`);
       
       res.status(200).json({
         redirect: true,
-        deployment: lastDeployment,
+        deployment: deployment,
         message: 'Redirect triggered!'
       });
     } else {
